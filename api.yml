@@ -1,0 +1,203 @@
+openapi: 3.0.3
+info:
+  title: Mangasee123
+  description: The unofficial Mangasee comment API
+  contact:
+    name: UserJHansen
+    url: https://github.com/userjhansen
+  license:
+    name: MIT
+    url: https://mit-license.org/
+  version: 1.0.0
+servers:
+  # Added by API Auto Mocking Plugin
+  - description: SwaggerHub API Auto Mocking
+    url: https://virtserver.swaggerhub.com/SDDRKHRPSIDFDWGROQ_1/MS123/1.0.0
+  - description: Production
+    url: https://smsmailing.sytes.net/
+paths:
+  /users:
+    get:
+      summary: A list of users and ids
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/User'
+        '429':
+          description: Too many requests
+          content:
+            text:
+              schema:
+                type: string
+                description: Error description
+                example: Too many requests. Try again in 20s
+        
+  /discussions:
+    get:
+      summary: Gets a list of discussion headings
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Discussion'
+        '429':
+          description: Too many requests
+          content:
+            text:
+              schema:
+                type: string
+                description: Error description
+                example: Too many requests. Try again in 20s
+  /comments:
+    get:
+      summary: A filtered list of comments
+      description: ''
+      operationId: ''
+      tags: []
+      parameters:
+        - in: query
+          name: page
+          description: ''
+          schema:
+            type: integer
+          required: true
+        - in: query
+          name: since
+          description: timestamp that comments must be after
+          schema: 
+            type: string
+        - in: query
+          name: manga
+          description: index name of the manga the comments are under
+          schema: 
+            type: string
+        - in: query
+          name: discussion
+          description: Id of the discussion they are under
+          schema: 
+            type: integer
+        - in: query
+          name: from
+          description: Id of a user involved in the conversation
+          schema: 
+            type: integer
+        - in: query
+          name: at
+          description: Username of the person to look for @s
+          schema: 
+            type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Comment'
+          headers:
+            X-Number-Pages:
+              description: Number of available pages
+              schema:
+                type: integer
+              required: true
+          description: Filtered comments
+        '404':
+          description: Page not found / No results
+          content:
+            text:
+              schema:
+                type: string
+                description: Error description
+                example: There are no results to your query
+        '429':
+          description: Too many requests
+          content:
+            text:
+              schema:
+                type: string
+                description: Error description
+                example: Too many requests. Try again in 20s
+components:
+  schemas:
+    Comment:
+      type: object
+      properties:
+        id:
+          type: number
+          example: 71481
+        user_id:
+          type: number
+          example: 38431
+        content:
+          type: string
+          example: Joey gang?
+        likes:
+          type: number
+          example: 5
+        timestamp:
+          type: string
+          example: 2021-09-04T22:13:13Z
+        discussion_id:
+          type: number
+          example: 0
+        manga_name:
+          type: string
+          example: umibe-no-onnanoko
+        replies:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: number
+                example: 71710
+              user_id:
+                type: number
+                example: 48807
+              content:
+                type: string
+                example: yeah
+              timestamp:
+                type: string
+                example: 2021-09-05T15:30:15Z
+    Discussion:
+      type: object
+      properties:
+        id:
+          type: number
+          example: 98753997
+        user_id:
+          type: number
+          example: 33881
+        title:
+          type: string
+          example: Is there a plan to add a basic rating system?
+        type:
+          type: number
+          example: 1
+        content:
+          type: string
+          example:
+            I know there are other websites but a simple rating system would be nice and convenient.
+        timestamp:
+          type: string
+          example: 2022-10-18T04:11:13Z
+    User:
+      type: object
+      properties:
+        id:
+          type: number
+          example: 2
+        name:
+          type: string
+          example: NepNep
+  securitySchemes: {}

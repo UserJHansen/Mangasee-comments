@@ -1,4 +1,4 @@
-package main
+package handlers
 
 import (
 	"time"
@@ -8,15 +8,9 @@ import (
 )
 
 func errorHandler(c *gin.Context, info ratelimit.Info) {
-	c.JSON(429, &Result[string]{
-		Status: "RATE-LIMITED", 
-		Result: "Too many requests. Try again in " + time.Until(info.ResetTime).String(),
-	})
+	c.String(429, "Too many requests. Try again in "+time.Until(info.ResetTime).String())
 }
 
 func fourofour(c *gin.Context) {
-	c.JSON(404, &Result[string]{
-		Status: "FILE_NOT_FOUND",
-		Result: "Oops, we can't seem to find "+c.FullPath(),
-	})
+	c.String(404, "Oops, we can't seem to find "+c.FullPath())
 }

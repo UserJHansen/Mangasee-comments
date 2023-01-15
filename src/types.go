@@ -6,20 +6,6 @@ import (
 	"time"
 )
 
-type SaveFile struct {
-	Comments      []Comment    `json:"comments"`
-	Users         []Username   `json:"users"`
-	Discussions   []Discussion `json:"discussions"`
-	DiscussionIds []uint32     `json:"discussion_ids"`
-	Deleted       []uint32     `json:"deleted"`
-}
-var deletedErr = fmt.Errorf("deleted")
-
-type Result[T any] struct {
-	Status string `json:"status"`
-	Result T      `json:"result"`
-}
-
 type PostType uint8
 
 const (
@@ -70,11 +56,11 @@ type Comment struct {
 	ID           uint32    `json:"id"`
 	UserID       uint32    `json:"user_id"`
 	Content      string    `json:"content"`
-	Likes        int16     `json:"likes"`
+	Likes        int16     `json:"likes,omitempty"`
 	Timestamp    time.Time `json:"timestamp"`
-	DiscussionID uint32    `json:"discussion_id"`
-	MangaName    string    `json:"manga_name"`
-	Replies      []Reply   `json:"replies"`
+	DiscussionID uint32    `json:"discussion_id,omitempty"`
+	MangaName    string    `json:"manga_name,omitempty"`
+	Replies      []Reply   `json:"replies,omitempty"`
 }
 type Reply struct {
 	ID        uint32    `json:"id"`
@@ -92,6 +78,7 @@ type Response[T any] struct {
 	Val     T    `json:"val"`
 }
 
+// Scanner types:
 type RawReply struct {
 	CommentID      string
 	UserID         string
@@ -117,3 +104,13 @@ type RawComment struct {
 
 type CommentResponse Response[[]RawComment]
 type ReplyResponse Response[[]RawReply]
+
+
+type SaveFile struct {
+	Comments      []Comment    `json:"comments"`
+	Users         []Username   `json:"users"`
+	Discussions   []Discussion `json:"discussions"`
+	DiscussionIds []uint32     `json:"discussion_ids"`
+	Deleted       []uint32     `json:"deleted"`
+}
+var deletedErr = fmt.Errorf("deleted")

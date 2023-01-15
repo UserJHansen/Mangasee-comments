@@ -38,7 +38,7 @@ var (
 	userMap       = []Username{}
 	discussions   = []Discussion{}
 	discussionIds = []uint32{}
-	deleted 	 = []uint32{}
+	deleted       = []uint32{}
 	out           = io.MultiWriter(os.Stdout)
 )
 
@@ -125,7 +125,7 @@ func main() {
 		os.Exit(0)
 	}()
 
-	if (*secure) {
+	if *secure {
 		setupTls(r)
 	} else {
 		log.Fatal(r.Run(":8080"))
