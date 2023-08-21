@@ -36,8 +36,8 @@ var (
 			Help: "Total number of Users possible based on the maximum ID.",
 		})
 	possibleUserVal = 0.0
-	scanTime        = promauto.NewGaugeVec(
-		prometheus.GaugeOpts{
+	scanTime        = promauto.NewHistogramVec(
+		prometheus.HistogramOpts{
 			Name: "scan_time",
 			Help: "Time taken to scan for new manga/comments in milliseconds",
 		}, []string{"type"})
@@ -46,8 +46,8 @@ var (
 			Name: "number_manga",
 			Help: "Number of manga in cache ",
 		})
-	numErrors = promauto.NewCounter(
-		prometheus.CounterOpts{
+	numErrors = promauto.NewHistogram(
+		prometheus.HistogramOpts{
 			Name: "errors_total",
 			Help: "Total number of errors encountered.",
 		})

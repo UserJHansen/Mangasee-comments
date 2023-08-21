@@ -61,12 +61,13 @@ func decodeResponse[T []RawComment | []RawDiscussionList | RawDiscussion](resp *
 // Returns number processed
 func decodeComments(comments []RawComment, discussionID uint32, mangaName string) []Comment {
 	commentArr := make([]Comment, len(comments))
+	tempNumErrors := 0
 
 	for _, comment := range comments {
 		commentTime, err := time.Parse("2006-01-02 15:04:05", comment.TimeCommented)
 		if err != nil {
 			Println("[COMMENT-CACHE] Error parsing time:", err)
-			numErrors.Add(1)
+			tempNumErrors++
 			continue
 		}
 		commentTime = commentTime.Add(-time.Hour * 2)
@@ -83,7 +84,7 @@ func decodeComments(comments []RawComment, discussionID uint32, mangaName string
 			commentTime, err := time.Parse("2006-01-02 15:04:05", reply.TimeCommented)
 			if err != nil {
 				Println("[COMMENT-CACHE] Error parsing time:", err)
-				numErrors.Add(1)
+				tempNumErrors++
 				continue
 			}
 			commentTime = commentTime.Add(-time.Hour * 2)
@@ -98,5 +99,7 @@ func decodeComments(comments []RawComment, discussionID uint32, mangaName string
 		}
 		commentArr = append(commentArr, newcomment)
 	}
+	numErrors.Observe(float64(tempNumErrors))
+
 	return commentArr
 }

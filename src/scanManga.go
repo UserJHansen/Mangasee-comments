@@ -40,6 +40,8 @@ func scanManga(manga SearchResponse) ([]RawComment, error) {
 func scanAllManga() error {
 	start := time.Now().UnixMicro()
 	Println("[COMMENT-CACHE] Starting manga scan...")
+	tempNumErrors := 0
+
 	resp, err := http.Get(*server + "_search.php")
 	if err != nil {
 		Println("[COMMENT-CACHE] Error getting Manga:", err)
@@ -66,7 +68,7 @@ func scanAllManga() error {
 				}
 				commentResults[i] = result
 			} else {
-				numErrors.Add(1)
+				tempNumErrors++
 			}
 			<-guard
 			wg.Done()
@@ -79,7 +81,7 @@ func scanAllManga() error {
 		Printf("[COMMENT-CACHE] That's an average of %dμs per manga\n", (time.Now().UnixMicro()-start)/int64(len(mangas)))
 	}
 
-	scanTime.WithLabelValues("manga").Set(float64((time.Now().UnixMicro() - start) / time.Millisecond.Microseconds()))
+	scanTime.WithLabelValues("manga").Observe(float64((time.Now().UnixMicro() - start) / time.Millisecond.Microseconds()))
 	numManga.Set(float64(len(mangas)))
 
 	start = time.Now().UnixMicro()
@@ -94,7 +96,7 @@ func scanAllManga() error {
 				go func(name string, comment RawComment) {
 					err := getReplies(comment, "manga/reply.get.php")
 					if err != nil {
-						numErrors.Add(1)
+						tempNumErrors++
 						Printf("[COMMENT-CACHE] On %s, err: %s\n", name, err)
 					}
 					<-guard
@@ -109,6 +111,7 @@ func scanAllManga() error {
 		Printf("[COMMENT-CACHE] Took %ds to get replies for %d comments\n", (time.Now().UnixMicro()-start)/time.Second.Microseconds(), numberRequests)
 		Printf("[COMMENT-CACHE] That's an average of %dμs per reply\n", (time.Now().UnixMicro()-start)/int64(numberRequests))
 	}
+	numErrors.Observe(float64(tempNumErrors))
 
 	// create a rough map of UserIDs to usernames
 	start = time.Now().UnixMicro()

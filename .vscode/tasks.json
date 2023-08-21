@@ -32,7 +32,11 @@
                 "showReuseMessage": true,
                 "clear": false
             },
-            "group": "build"
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "problemMatcher": []
         },
         {
             "label": "Start service",

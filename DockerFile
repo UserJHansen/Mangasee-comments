@@ -1,0 +1,25 @@
+FROM golang:1.18-bullseye as builder
+
+ENV APP_HOME /go/src/comment-api
+RUN mkdir -p "$APP_HOME"
+
+WORKDIR "$APP_HOME"
+
+COPY src/ .
+COPY go.mod .
+COPY go.sum .
+
+RUN go mod download
+RUN go mod verify
+RUN go build -o comment-cache
+
+FROM golang:1.18-bullseye
+
+ENV APP_HOME /go/src/comment-api
+RUN mkdir -p "$APP_HOME"
+WORKDIR "$APP_HOME"
+
+COPY --from=builder "$APP_HOME"/comment-cache $APP_HOME
+
+EXPOSE 8080
+CMD ["./comment-cache"]

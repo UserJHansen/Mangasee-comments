@@ -114,6 +114,7 @@ func scanAllDiscussions() error {
 	newDiscussions := make([]Discussion, len(discussionIds))
 	discussionComments := make([][]RawComment, len(discussionIds))
 	newMap := make([]Username, len(discussionIds))
+	tempNumErrors := 0
 
 	for i, discussion := range discussionIds {
 		guard <- struct{}{}
@@ -124,7 +125,7 @@ func scanAllDiscussions() error {
 				discussionTime, err := time.Parse("2006-01-02 15:04:05", result.TimePosted)
 				if err != nil {
 					Println("[COMMENT-CACHE] Error parsing time:", err)
-					numErrors.Add(1)
+					tempNumErrors = tempNumErrors + 1
 				} else {
 					discussionTime = discussionTime.Add(-time.Hour * 2)
 					newDiscussions[i] = Discussion{
@@ -146,7 +147,7 @@ func scanAllDiscussions() error {
 					Printf("[COMMENT-CACHE] (%d/%d) Deleted discussion: %d\n", i, len(rawDiscussions), id)
 				}
 			} else {
-				numErrors.Add(1)
+				tempNumErrors = tempNumErrors + 1
 			}
 			<-guard
 			wg.Done()
@@ -159,7 +160,7 @@ func scanAllDiscussions() error {
 		Printf("[COMMENT-CACHE] That's an average of %dμs per discussion\n", (time.Now().UnixMicro()-start)/int64(len(rawDiscussions)))
 	}
 
-	scanTime.WithLabelValues("discussion").Set(float64((time.Now().UnixMicro() - start) / time.Millisecond.Microseconds()))
+	scanTime.WithLabelValues("discussion").Observe(float64((time.Now().UnixMicro() - start) / time.Millisecond.Microseconds()))
 
 	start = time.Now().UnixMicro()
 	numberRequests := 0
@@ -173,7 +174,7 @@ func scanAllDiscussions() error {
 				go func(name string, comment RawComment) {
 					err := getReplies(comment, "discussion/post.reply.get.php")
 					if err != nil {
-						numErrors.Add(1)
+						tempNumErrors = tempNumErrors + 1
 						Printf("[COMMENT-CACHE] On %s err: %s\n", name, err)
 					}
 					<-guard
@@ -188,6 +189,8 @@ func scanAllDiscussions() error {
 		Printf("[COMMENT-CACHE] Took %dms to get replies for %d comments\n", (time.Now().UnixMicro()-start)/time.Millisecond.Microseconds(), numberRequests)
 		Printf("[COMMENT-CACHE] That's an average of %dμs per reply\n", (time.Now().UnixMicro()-start)/int64(numberRequests))
 	}
+
+	numErrors.Observe(float64(tempNumErrors))
 
 	// create a rough map of UserIDs to usernames
 	start = time.Now().UnixMicro()

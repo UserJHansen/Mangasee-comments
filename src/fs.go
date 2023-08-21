@@ -15,7 +15,6 @@ func save() error {
 		Deleted:       deleted,
 	}, "", "  ")
 	if err != nil {
-		numErrors.Add(1)
 		return err
 	}
 
@@ -31,7 +30,6 @@ func load() error {
 			return nil
 		}
 
-		numErrors.Add(1)
 		return err
 	}
 	var saveData SaveFile

@@ -105,7 +105,6 @@ type RawComment struct {
 type CommentResponse Response[[]RawComment]
 type ReplyResponse Response[[]RawReply]
 
-
 type SaveFile struct {
 	Comments      []Comment    `json:"comments"`
 	Users         []Username   `json:"users"`
@@ -113,4 +112,10 @@ type SaveFile struct {
 	DiscussionIds []uint32     `json:"discussion_ids"`
 	Deleted       []uint32     `json:"deleted"`
 }
+
 var deletedErr = fmt.Errorf("deleted")
+
+type Result[T any] struct {
+	Status string `json:"status"`
+	Result T      `json:"result"`
+}
