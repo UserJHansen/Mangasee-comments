@@ -1,6 +1,6 @@
 module github.com/userjhansen/comment-cache
 
-go 1.19
+go 1.24.0
 
 require (
 	github.com/JGLTechnologies/gin-rate-limit v1.5.2
@@ -9,7 +9,7 @@ require (
 	github.com/gin-gonic/gin v1.9.1
 	github.com/prometheus/client_golang v1.13.0
 	github.com/zsais/go-gin-prometheus v0.1.0
-	golang.org/x/crypto v0.21.0
+	golang.org/x/crypto v0.45.0
 )
 
 require (
@@ -44,10 +44,10 @@ require (
 	github.com/twitchyliquid64/golang-asm v0.15.1 // indirect
 	github.com/ugorji/go/codec v1.2.11 // indirect
 	golang.org/x/arch v0.3.0 // indirect
-	golang.org/x/net v0.23.0 // indirect
-	golang.org/x/sync v0.0.0-20220819030929-7fc1605a5dde // indirect
-	golang.org/x/sys v0.18.0 // indirect
-	golang.org/x/text v0.14.0 // indirect
+	golang.org/x/net v0.47.0 // indirect
+	golang.org/x/sync v0.18.0 // indirect
+	golang.org/x/sys v0.38.0 // indirect
+	golang.org/x/text v0.31.0 // indirect
 	google.golang.org/protobuf v1.33.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
